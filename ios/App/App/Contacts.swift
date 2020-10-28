@@ -34,7 +34,7 @@ public class Contacts : CAPPlugin {
         getAllContacts { (result) in
             switch result {
             case .failure(let err):
-                call.reject(err.localizedDescription)
+                call.reject(err.localizedDescription, nil, err)
             case .success(let contacts):
                 print(contacts)
                 let contactsDict = self.appContactsToDict(contacts: contacts)
@@ -93,6 +93,11 @@ public class Contacts : CAPPlugin {
     private func getAllContacts(completion: @escaping (_ result: Result<[AppContact], Error>) -> Void) {
         guard let store = self.store else {
             completion(.failure(ContactError.genericError(errorMessage: "store is nil")))
+            return
+        }
+        
+        if !access {
+            completion(.failure(ContactError.accessDenied))
             return
         }
                 
