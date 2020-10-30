@@ -10,10 +10,21 @@ export interface Contact {
   emailAddresses: string[];
 }
 
-export const getContacts = async (): Promise<Contact[]> => {
-  try {
-    const result = await Contacts.getAll();
+export enum ContactSearchType {
+  All = "ALL",
+  Name = "NAME",
+  Phone = "PHONE",
+  Email = "EMAIL"
+};
 
+export const getContacts = async (searchTerm?: string): Promise<Contact[]> => {
+  try {
+    if (searchTerm !== "") {
+      const result = await Contacts.getBySearch({searchTerm: searchTerm, searchType: ContactSearchType.All});
+      return result.contacts;
+    }
+    
+    const result = await Contacts.getAll();
     return result.contacts;
   } catch (e) {
     console.error(`ERR (${getContacts.name}):`, e);

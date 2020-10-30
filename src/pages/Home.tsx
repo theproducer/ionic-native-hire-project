@@ -1,6 +1,6 @@
-import ContactListItem from '../components/ContactListItem';
-import React, { useState } from 'react';
-import { Contact, getContacts } from '../data/contacts';
+import ContactListItem from "../components/ContactListItem";
+import React, { useEffect, useState } from "react";
+import { Contact, ContactSearchType, getContacts } from "../data/contacts";
 import {
   IonContent,
   IonHeader,
@@ -8,18 +8,31 @@ import {
   IonPage,
   IonTitle,
   IonToolbar,
-  useIonViewWillEnter
-} from '@ionic/react';
-import './Home.css';
+  IonSearchbar,
+  
+  useIonViewWillEnter,
+} from "@ionic/react";
+
+import "./Home.css";
 
 const Home: React.FC = () => {
-
+  const [searchTerm, setSearchTerm] = useState<string | undefined>(undefined);
   const [contacts, setContacts] = useState<Contact[]>([]);
 
-  useIonViewWillEnter(async () => {
-    const msgs = await getContacts();
+  const fetchContacts = async (searchTerm?: string) => {
+    const msgs = await getContacts(searchTerm);
     setContacts(msgs);
+  };
+
+  useIonViewWillEnter(async () => {
+    await fetchContacts();
   });
+
+  useEffect(() => {
+    if (searchTerm !== undefined) {
+      fetchContacts(searchTerm);
+    }    
+  }, [searchTerm]);
 
   return (
     <IonPage id="home-page">
@@ -31,14 +44,23 @@ const Home: React.FC = () => {
       <IonContent fullscreen>
         <IonHeader collapse="condense">
           <IonToolbar>
-            <IonTitle size="large">
-              Contacts
-            </IonTitle>
+            <IonTitle size="large">Contacts</IonTitle>
+          </IonToolbar>
+          <IonToolbar>
+            <IonSearchbar
+              placeholder="Search contacts"
+              onIonChange={(e) => {
+                setSearchTerm(e.detail.value || "");                
+              }}       
+              debounce={750}       
+            />
           </IonToolbar>
         </IonHeader>
 
         <IonList>
-          {contacts.map(contact => <ContactListItem key={contact.id} contact={contact} />)}
+          {contacts.map((contact) => (
+            <ContactListItem key={contact.id} contact={contact} />
+          ))}
         </IonList>
       </IonContent>
     </IonPage>
