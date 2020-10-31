@@ -1,6 +1,11 @@
 import ContactListItem from "../components/ContactListItem";
 import React, { useEffect, useState } from "react";
-import { Contact, ContactSearchType, getContacts } from "../data/contacts";
+import {
+  Contact,
+  getContacts,
+  queryContacts,
+  getContactById,
+} from "../data/contacts";
 import {
   IonContent,
   IonHeader,
@@ -9,19 +14,33 @@ import {
   IonTitle,
   IonToolbar,
   IonSearchbar,
-  
   useIonViewWillEnter,
 } from "@ionic/react";
 
 import "./Home.css";
+import ContactModal from "../components/ContactModal";
 
 const Home: React.FC = () => {
+  const [showContact, setShowContact] = useState<boolean>(false);
+  const [contact, setContact] = useState<Contact | null>(null);
   const [searchTerm, setSearchTerm] = useState<string | undefined>(undefined);
   const [contacts, setContacts] = useState<Contact[]>([]);
 
   const fetchContacts = async (searchTerm?: string) => {
-    const msgs = await getContacts(searchTerm);
-    setContacts(msgs);
+    if (searchTerm) {
+      const msg = await queryContacts(searchTerm);
+      setContacts(msg);
+    } else {
+      const msgs = await getContacts();
+      setContacts(msgs);
+    }
+  };
+
+  const onContactClick = async (id: string) => {
+    console.log(id);
+    const contact = await getContactById(id);
+    setContact(contact);
+    setShowContact(true);
   };
 
   useIonViewWillEnter(async () => {
@@ -31,7 +50,7 @@ const Home: React.FC = () => {
   useEffect(() => {
     if (searchTerm !== undefined) {
       fetchContacts(searchTerm);
-    }    
+    }
   }, [searchTerm]);
 
   return (
@@ -42,6 +61,7 @@ const Home: React.FC = () => {
         </IonToolbar>
       </IonHeader>
       <IonContent fullscreen>
+        <ContactModal showModel={showContact} setShowContact={setShowContact} contact={contact} />
         <IonHeader collapse="condense">
           <IonToolbar>
             <IonTitle size="large">Contacts</IonTitle>
@@ -50,16 +70,20 @@ const Home: React.FC = () => {
             <IonSearchbar
               placeholder="Search contacts"
               onIonChange={(e) => {
-                setSearchTerm(e.detail.value || "");                
-              }}       
-              debounce={750}       
+                setSearchTerm(e.detail.value || "");
+              }}
+              debounce={750}
             />
           </IonToolbar>
         </IonHeader>
 
         <IonList>
           {contacts.map((contact) => (
-            <ContactListItem key={contact.id} contact={contact} />
+            <ContactListItem
+              key={contact.id}
+              contact={contact}
+              onContactClick={onContactClick}
+            />
           ))}
         </IonList>
       </IonContent>

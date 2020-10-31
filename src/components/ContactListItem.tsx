@@ -1,19 +1,23 @@
-import React from 'react';
-import {
-  IonItem,
-  IonLabel,
-  IonNote
-} from '@ionic/react';
-import { Contact } from '../data/contacts';
-import './ContactListItem.css';
+import React from "react";
+import { IonItem, IonLabel, IonNote } from "@ionic/react";
+import { Contact } from "../data/contacts";
+import "./ContactListItem.css";
 
 interface ContactListItemProps {
   contact: Contact;
+  onContactClick: (id: string) => void;
 }
 
-const ContactListItem: React.FC<ContactListItemProps> = ({ contact }) => {
+const ContactListItem: React.FC<ContactListItemProps> = ({
+  contact,
+  onContactClick,
+}) => {
   return (
-    <IonItem>
+    <IonItem
+      onClick={() => {
+        onContactClick(contact.id);
+      }}
+    >
       <IonLabel className="ion-text-wrap">
         <h2>
           {contact.firstName} {contact.lastName}

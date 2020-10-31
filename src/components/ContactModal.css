@@ -1,0 +1,16 @@
+.padding {
+    padding: 15px;
+}
+
+.contactHeader{
+    height: 250px;
+    background-color: orange;
+    position: relative;;
+}
+
+.contactHeader h3 {
+    position: absolute;
+    bottom: 15px;
+    right: 15px;
+    color: white;
+}
