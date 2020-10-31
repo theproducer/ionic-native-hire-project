@@ -61,22 +61,23 @@ const Home: React.FC = () => {
         </IonToolbar>
       </IonHeader>
       <IonContent fullscreen>
-        <ContactModal showModel={showContact} setShowContact={setShowContact} contact={contact} />
+        <ContactModal
+          showModel={showContact}
+          setShowContact={setShowContact}
+          contact={contact}
+        />
         <IonHeader collapse="condense">
           <IonToolbar>
             <IonTitle size="large">Contacts</IonTitle>
           </IonToolbar>
-          <IonToolbar>
-            <IonSearchbar
-              placeholder="Search contacts"
-              onIonChange={(e) => {
-                setSearchTerm(e.detail.value || "");
-              }}
-              debounce={750}
-            />
-          </IonToolbar>
         </IonHeader>
-
+        <IonSearchbar
+          placeholder="Search contacts"
+          onIonChange={(e) => {
+            setSearchTerm(e.detail.value || "");
+          }}
+          debounce={750}
+        />
         <IonList>
           {contacts.map((contact) => (
             <ContactListItem
